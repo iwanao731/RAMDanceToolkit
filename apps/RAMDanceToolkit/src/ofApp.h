@@ -48,6 +48,12 @@
 
 #include "Extractor.h"
 
+// original
+#include "DDA.h"
+#include "WeightEffort.h"
+#include "Paperman.h"
+#include "VisualStudio.h"
+
 class ofApp : public rdtk::BaseApp
 {
 public:

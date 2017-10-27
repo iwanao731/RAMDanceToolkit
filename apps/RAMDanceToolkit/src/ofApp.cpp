@@ -58,6 +58,13 @@ void ofApp::setup()
     sceneManager.addScene<Kepler>();
     sceneManager.addScene<Chain>();
 #endif
+    
+    // original
+    sceneManager.addScene<DDA>();
+    sceneManager.addScene<WeightEffort>();
+    sceneManager.addScene<Paperman>();
+    sceneManager.addScene<VisualStudio>();
+
 	
 }
 

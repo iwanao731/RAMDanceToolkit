@@ -9,6 +9,9 @@
 /* Begin PBXBuildFile section */
 		270D2D9C16E4760700D5F750 /* icon.icns in CopyFiles */ = {isa = PBXBuildFile; fileRef = 270D2D9916E475D800D5F750 /* icon.icns */; };
 		601900591644E31F001930AA /* libram.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 60B90AB31644E21400AF2156 /* libram.a */; };
+		8DD534331FA317A700C5DEEE /* DDA.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8DD534311FA317A700C5DEEE /* DDA.cpp */; };
+		8DD534371FA317BB00C5DEEE /* Paperman.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8DD534351FA317BB00C5DEEE /* Paperman.cpp */; };
+		8DD5343B1FA317CC00C5DEEE /* WeightEffort.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8DD534391FA317CC00C5DEEE /* WeightEffort.cpp */; };
 		9A2B3F6516D325C7001CBFC9 /* Kepler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A2B3F5116D325C7001CBFC9 /* Kepler.cpp */; };
 		9A2B3F6616D325C7001CBFC9 /* KeplerBtDynamics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A2B3F5316D325C7001CBFC9 /* KeplerBtDynamics.cpp */; };
 		9A2B3F6716D325C7001CBFC9 /* KeplerBtShapeDrawer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A2B3F5516D325C7001CBFC9 /* KeplerBtShapeDrawer.cpp */; };
@@ -108,6 +111,13 @@
 		27FD3B6B16D387E800C9EAC6 /* Monster.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Monster.h; sourceTree = "<group>"; };
 		60B90AAE1644E21400AF2156 /* RAMDanceToolkit.xcodeproj */ = {isa = PBXFileReference; lastKnownFileType = "wrapper.pb-project"; name = RAMDanceToolkit.xcodeproj; path = ../../libs/project/osx/RAMDanceToolkit.xcodeproj; sourceTree = "<group>"; };
 		60E559B116D3366A00051FE9 /* HastyChase.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = HastyChase.h; sourceTree = "<group>"; };
+		8DD534311FA317A700C5DEEE /* DDA.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = DDA.cpp; path = scenes/DDA/DDA.cpp; sourceTree = "<group>"; };
+		8DD534321FA317A700C5DEEE /* DDA.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = DDA.h; path = scenes/DDA/DDA.h; sourceTree = "<group>"; };
+		8DD534351FA317BB00C5DEEE /* Paperman.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Paperman.cpp; path = scenes/Paperman/Paperman.cpp; sourceTree = "<group>"; };
+		8DD534361FA317BB00C5DEEE /* Paperman.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Paperman.h; path = scenes/Paperman/Paperman.h; sourceTree = "<group>"; };
+		8DD534391FA317CC00C5DEEE /* WeightEffort.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = WeightEffort.cpp; path = scenes/WeightEffort/WeightEffort.cpp; sourceTree = "<group>"; };
+		8DD5343A1FA317CC00C5DEEE /* WeightEffort.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WeightEffort.h; path = scenes/WeightEffort/WeightEffort.h; sourceTree = "<group>"; };
+		8DD5343D1FA317DF00C5DEEE /* VisualStudio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VisualStudio.h; path = scenes/VisualStudio/VisualStudio.h; sourceTree = "<group>"; };
 		9A2B3F4016D325C7001CBFC9 /* Abacus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Abacus.h; sourceTree = "<group>"; };
 		9A2B3F4216D325C7001CBFC9 /* BasicActor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BasicActor.h; sourceTree = "<group>"; };
 		9A2B3F4416D325C7001CBFC9 /* BigBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BigBox.h; sourceTree = "<group>"; };
@@ -281,9 +291,48 @@
 			path = scenes/HastyChase;
 			sourceTree = "<group>";
 		};
+		8DD534301FA3179000C5DEEE /* DDA */ = {
+			isa = PBXGroup;
+			children = (
+				8DD534311FA317A700C5DEEE /* DDA.cpp */,
+				8DD534321FA317A700C5DEEE /* DDA.h */,
+			);
+			name = DDA;
+			sourceTree = "<group>";
+		};
+		8DD534341FA317B200C5DEEE /* Paperman */ = {
+			isa = PBXGroup;
+			children = (
+				8DD534351FA317BB00C5DEEE /* Paperman.cpp */,
+				8DD534361FA317BB00C5DEEE /* Paperman.h */,
+			);
+			name = Paperman;
+			sourceTree = "<group>";
+		};
+		8DD534381FA317C500C5DEEE /* WeightEffort */ = {
+			isa = PBXGroup;
+			children = (
+				8DD534391FA317CC00C5DEEE /* WeightEffort.cpp */,
+				8DD5343A1FA317CC00C5DEEE /* WeightEffort.h */,
+			);
+			name = WeightEffort;
+			sourceTree = "<group>";
+		};
+		8DD5343C1FA317D200C5DEEE /* VisualStudio */ = {
+			isa = PBXGroup;
+			children = (
+				8DD5343D1FA317DF00C5DEEE /* VisualStudio.h */,
+			);
+			name = VisualStudio;
+			sourceTree = "<group>";
+		};
 		9A1DE6D516AA666100A10E3F /* Scenes */ = {
 			isa = PBXGroup;
 			children = (
+				8DD5343C1FA317D200C5DEEE /* VisualStudio */,
+				8DD534381FA317C500C5DEEE /* WeightEffort */,
+				8DD534341FA317B200C5DEEE /* Paperman */,
+				8DD534301FA3179000C5DEEE /* DDA */,
 				C64C5C121F99AEC500EA4A4E /* Extractor */,
 				9AD1DE1D17269E2100C97F20 /* Helper */,
 				9A778459171847F0004ED621 /* MovingCam */,
@@ -662,6 +711,7 @@
 			buildActionMask = 2147483647;
 			files = (
 				E4B69E200A3A1BDC003C02F2 /* main.cpp in Sources */,
+				8DD534371FA317BB00C5DEEE /* Paperman.cpp in Sources */,
 				E4B69E210A3A1BDC003C02F2 /* ofApp.cpp in Sources */,
 				9A2B3F6516D325C7001CBFC9 /* Kepler.cpp in Sources */,
 				CF2B842C1A84CCBD008A183B /* SphereMesh.cpp in Sources */,
@@ -669,10 +719,12 @@
 				9A2B3F6716D325C7001CBFC9 /* KeplerBtShapeDrawer.cpp in Sources */,
 				9A2B3F6816D325C7001CBFC9 /* KeplerCube.cpp in Sources */,
 				D2B8DCD216D3835700210022 /* BaseConstrains.cpp in Sources */,
+				8DD5343B1FA317CC00C5DEEE /* WeightEffort.cpp in Sources */,
 				D2B8DCD316D3835700210022 /* ChainBtDynamics.cpp in Sources */,
 				D2B8DCD416D3835700210022 /* ChainBtShapeDrawer.cpp in Sources */,
 				CF2B842E1A84D1B4008A183B /* Laban.cpp in Sources */,
 				D2B8DCD516D3835700210022 /* ChainObject.cpp in Sources */,
+				8DD534331FA317A700C5DEEE /* DDA.cpp in Sources */,
 				D2B8DCD616D3835700210022 /* Chain.cpp in Sources */,
 				9AD1DE2017269E2100C97F20 /* btPicker.cpp in Sources */,
 			);
