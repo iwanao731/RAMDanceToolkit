@@ -53,6 +53,7 @@
 #include "WeightEffort.h"
 #include "Paperman.h"
 #include "VisualStudio.h"
+#include "Emitter.h"
 
 class ofApp : public rdtk::BaseApp
 {

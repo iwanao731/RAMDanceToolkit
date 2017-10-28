@@ -32,7 +32,7 @@ public:
 		rdtk::BeginCamera();
 		
 		/*  Debug preview  */
-		mEx.draw();
+		//mEx.draw();
 		
 		for (int i = 0;i < mEx.getNumPort();i++)
 		{

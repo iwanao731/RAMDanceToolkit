@@ -6,53 +6,54 @@
 //
 //
 
-#ifndef boids_hpp
-#define boids_hpp
+#pragma once
 
 #include "ramMain.h"
+#include "Extractor.h"
 
-struct Particle{
-    ofVec3f pos;
-    ofVec3f vel;
+struct Plane {
+    int index;
     ofColor col;
-    int life;
-    int linkIndex;
-    float sumDistance;
-    float theta;
-    float speed;
-    float angle;
+    ofVec3f previousPos;
+    ofVec3f currentPos;
+    ofVec3f vel;
+    ofMesh pathLines;
+    deque<ofVec3f> pathVertices;
 };
 
-class Paperman: public rdtk::BaseScene
+class Paperman : public rdtk::BaseScene
 {
 public:
     
     Paperman();
+    void setup();
     void update();
     void draw();
-    
     void drawImGui();
-    void addParticle(ofVec3f pos, ofVec3f vel, float life);
-    int getNumParticles() { return mParticles.size(); }
     string getName() const { return "Paperman"; }
-    ofColor errorToRGB(float err, float errMin, float errMax);
-    float gaussFunction(float sumDistance);
+    
+    void modelingPlane(ofMesh& mesh);
+    void setScalePlane(const float scale);
+    void addPlane();
+    void removePlane();
+    void resetPos();
 
 private:
+    bool mIsAddPlane;
+    bool mIsRemovePlane;
     
-    bool mIsFirstFrame;
-    bool mEnableColor;
-    bool mIsDrawEdge;
-    int mLife;
-    float mSize;
-    float mDamping;
-    float mThreshold;
+    bool mIsPlayAuto;
+    bool mIsPlayManual;
+    bool mIsPlayBlackBox;
+    
     float mTimestep;
-    float mGravity;
-    vector<ofVec3f> mPreviousPos;
-    vector<Particle> mParticles;
-    vector<Particle> mPreviousJoints;
+    
+    ofMesh mMesh;
+    vector<Plane> mPlanes;
+    rdtk::MotionExtractor mEx;  // for picking the joint
+
+
+    void updateAuto();
+    void updateManual();
+    void checkNumPlaneWithActor();
 };
-
-
-#endif /* boids_hpp */

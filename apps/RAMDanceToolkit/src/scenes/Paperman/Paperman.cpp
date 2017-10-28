@@ -9,217 +9,303 @@
 #include "Paperman.h"
 
 Paperman::Paperman() :
-    mIsFirstFrame(false),
-    mSize(5.0f),
-    mDamping(1.0f),
-    mTimestep(0.66f),
-    mThreshold(5.0f),
-    mGravity(-6.0f),
-    mLife(200),
-    mEnableColor(false),
-    mIsDrawEdge(false)
+    mIsAddPlane(false),
+    mIsRemovePlane(false),
+    mIsPlayAuto(false),
+    mIsPlayManual(true),
+    mIsPlayBlackBox(false),
+    mTimestep(0.33)
 {
-    mPreviousPos.clear();
-    mPreviousPos.resize(rdtk::Actor::NUM_JOINTS);
+    ofSetVerticalSync(true);
+    this->modelingPlane(mMesh);
+    this->addPlane();
+}
+
+void Paperman::setup()
+{
+    cout << "Start scene setup: " << getName() << endl;
+    mEx.setup(this);
+    cout << "Done scene setup: " << getName() << endl;
 }
 
 void Paperman::update()
 {
-    // update simulation
-    int num = 0;
-    for(auto& particle : mParticles)
-    {
-        ofVec3f prevPos = particle.pos;
-        
-        particle.vel *= mDamping;
-        particle.pos += (particle.vel + ofVec3f(0.0f, mGravity, 0.0f)) * mTimestep;
-        particle.pos.y += gaussFunction(particle.sumDistance);
-        
-        if(particle.pos.y < 0.0f){
-            particle.pos.y = 0.0f;
-            particle.vel = ofVec3f::zero();
-        }
-        
-        particle.life = particle.life - 1;
-        particle.sumDistance = (particle.pos - prevPos).length();
+    mEx.update();
 
-        if(particle.life < 0)
-        {
-            num++;
-        }
+    if(mIsAddPlane){
+        addPlane();
+        mIsAddPlane = false;
     }
     
-    // remove considered to those life
-    for(int i=0; i<num; i++){
-        mParticles.erase(mParticles.begin());
+    if(mIsRemovePlane){
+        removePlane();
+        mIsRemovePlane = false;
     }
-
-    // number of person
-    for(int i=0; i<getNumNodeArray(); i++)
-    {
-        const rdtk::NodeArray &NA = getNodeArray(i);
-        
-        // number of joints
-        for (int j=0; j<NA.getNumNode(); j++)
-        {
-            const rdtk::Node &node = NA.getNode(j);
-            
-            if(!mIsFirstFrame)
-            {
-                mPreviousPos[j] = node.getGlobalPosition();
-                mIsFirstFrame = true;
-            }
-            else{
-                ofVec3f p0 = mPreviousPos[j];
-                ofVec3f p1 = node.getGlobalPosition();
-                ofVec3f vel = p1 - p0;
-                float length = vel.length();               
-                
-                if(mThreshold < length)
-                {
-                    this->addParticle(node.getGlobalPosition(), vel, mLife);
-                }
-                
-                // save current position for next frame
-                mPreviousPos[j] = node.getGlobalPosition();
-            }
-        }
+    
+    if(mIsPlayAuto){
+        this->updateAuto();
+    }
+    else if(mIsPlayManual){
+        this->updateManual();
     }
 }
 
 void Paperman::draw()
 {
     rdtk::BeginCamera();
-    
-    for(auto& particle : mParticles)
+
+    for(auto &p : mPlanes)
     {
-        if(mEnableColor){
-            ofSetColor(particle.col);
-        }else{
-            ofSetColor(255);
-        }
-        ofVec3f p = particle.pos;
         ofPushMatrix();
-        ofTranslate(p.x, p.y, p.z);
-        ofDrawBox(0,0,0, mSize);
-        //drawPaperPlane();
-        ofPopMatrix();
+        
+        ofSetLineWidth(2);
+        ofSetColor(p.col);
+        p.pathLines.draw();
+    
+        // translate and rotate to the current position and orientation
+        ofTranslate(p.currentPos.x, p.currentPos.y, p.currentPos.z);
+        
+        if( (p.currentPos - p.previousPos).length() > 0.0 ) {
+            rotateToNormal(p.currentPos - p.previousPos);
+        }
+        
+        ofSetColor(255);
+        mMesh.draw();
 
+        ofPopMatrix();
     }
     
-    if(mIsDrawEdge)
-    {
-        for(int i=0; i<mParticles.size(); i++){
-            
-            if(mEnableColor){
-                ofSetColor(mParticles[i].col);
-            }else{
-                ofSetColor(255);
-            }
-            
-            int r = ofRandom(mParticles.size());
-            int idx = mParticles[i].linkIndex;
-            ofDrawLine(mParticles[i].pos, mParticles[idx].pos);
-        }
-    }
-
+    mEx.draw();
+    
     rdtk::EndCamera();
 }
 
 void Paperman::drawImGui()
 {
-    ImGui::Checkbox("Enable Color", &mEnableColor);
-    ImGui::Checkbox("Draw Edge", &mIsDrawEdge);
-    ImGui::DragInt("Life", &mLife, 10, 50.0, 10000.0);
-    ImGui::DragFloat("Size", &mSize, 1.0, 0.0, 20.0);
-    ImGui::DragFloat("Damping", &mDamping, 0.01, 0.0, 1.0);
-    ImGui::DragFloat("Timestep", &mTimestep, 0.01, 0.0, 1.0);
-    ImGui::DragFloat("Gravity", &mGravity, 0.1f, -9.8f, 9.8f);
-    ImGui::DragFloat("Threshold", &mThreshold, 0.1, 0.0, 100.0);
+    ImGui::Checkbox("Add plane", &mIsAddPlane);
+    ImGui::Checkbox("Remove plane", &mIsRemovePlane);
+    ImGui::Checkbox("Auto play", &mIsPlayAuto);
+    ImGui::Checkbox("Manual play", &mIsPlayManual);
+    
+    mEx.drawImGui();
 }
 
-void Paperman::addParticle(ofVec3f pos, ofVec3f vel, float life)
+void Paperman::updateAuto()
 {
-    Particle p;
-    p.pos = pos;
-    p.vel = vel;
-    p.life = life;
-    p.col = errorToRGB(vel.length(), 0.0, 10);
-    p.sumDistance = 0.0f;
-    p.linkIndex = ofRandom(mParticles.size());
-    mParticles.push_back(p);
+    for(auto& p : mPlanes)
+    {
+        p.previousPos = p.currentPos;
+        
+        // generate a noisy 3d position over time
+        float t = (2 + ofGetElapsedTimef()) * 0.5;
+        p.currentPos.x = ofSignedNoise(t, 0, 0, p.index);
+        p.currentPos.y = ofSignedNoise(0, t, 0, p.index);
+        p.currentPos.z = ofSignedNoise(0, 0, t, p.index);
+        p.currentPos *= 400; // scale from -1,+1 range to -400,+400
+        
+        // add the current position to the pathVertices deque
+        p.pathVertices.push_back(p.currentPos);
+        
+        // if we have too many vertices in the deque, get rid of the oldest ones
+        while(p.pathVertices.size() > 200) {
+            p.pathVertices.pop_front();
+        }
+        
+        // clear the pathLines ofMesh from any old vertices
+        p.pathLines.clear();
+        
+        // add all the vertices from pathVertices
+        for(unsigned int i = 0; i < p.pathVertices.size(); i++) {
+            p.pathLines.addVertex(p.pathVertices[i]);
+        }
+    }
 }
 
-float Paperman::gaussFunction(float sumDistance)
+void Paperman::checkNumPlaneWithActor()
 {
-    float myu = 20.f;
-    float sigma = 4.0f;
-    float alpha = 1.0f/(sqrt(2.0f*M_PI)*sigma);
-    float inside = - (sumDistance - myu)*(sumDistance - myu) / (2.0f * sigma*sigma);
-    float gauss = alpha * exp(inside);
-    return gauss;
+    int numPeople = getNumNodeArray();
+    
+    while(numPeople != mPlanes.size())
+    {
+        // check the number of plane
+        if(mPlanes.size() < numPeople){
+            this->addPlane();
+        }else if(mPlanes.size() > numPeople){
+            this->removePlane();
+        }
+    }
 }
 
-ofColor Paperman::errorToRGB(float err, float errMin, float errMax)
+void Paperman::updateManual()
 {
-    int r, g, b;
-    float norm_err = (err - errMin) / (errMax - errMin);
-    float H, Hi, f, p, q, t, S = 1.0f, V = 1.0f;
+    //checkNumPlaneWithActor();
+    // number of people == number of plane
+//    for(int i=0; i<getNumNodeArray(); i++)
+//    {
+//        const rdtk::NodeArray &NA = getNodeArray(i);
+//        
+//        // number of joints
+//        
+//        if(mPlanes[i].index < NA.getNumNode()){
+//            
+//            const rdtk::Node &node = NA.getNode(17);
+//            
+//            ofVec3f v = (node.getGlobalPosition() - node.getParent()->getGlobalPosition()).normalize();
+//            
+//            auto& p = mPlanes[i];
+//            
+//            p.previousPos = p.currentPos; // save for next frame
+//            
+//            p.currentPos += v / mTimestep;
+//            
+//            // add the current position to the pathVertices deque
+//            p.pathVertices.push_back(p.currentPos);
+//            
+//            // if we have too many vertices in the deque, get rid of the oldest ones
+//            while(p.pathVertices.size() > 200) {
+//                p.pathVertices.pop_front();
+//            }
+//            
+//            // clear the pathLines ofMesh from any old vertices
+//            p.pathLines.clear();
+//            
+//            // add all the vertices from pathVertices
+//            for(unsigned int i = 0; i < p.pathVertices.size(); i++) {
+//                p.pathLines.addVertex(p.pathVertices[i]);
+//            }
+//        }
+//    }
     
-    H = 360.0f - (240.0f * norm_err + 120.0f);
-    
-    if(H < 0.0f)
-    {
-        H = 0.0f;
+    // picking joint drawing
+    for (int i = 0;i < mEx.getNumPort();i++) {
+        
+        //! Get extractor informations
+        const ofMatrix4x4 mat = mEx.getNodeAt(i).getGlobalTransformMatrix();
+        const ofVec3f pos = mEx.getPositionAt(i);
+        const ofVec3f next = mEx.getPositionAt((i+1) % mEx.getNumPort());
+        const ofVec3f vel = mEx.getVelocityAt(i);
+        ofVec3f direction = next - pos;
+        
+        auto& p = mPlanes[i];
+        p.previousPos = p.currentPos; // save for next frame
+        //p.currentPos += vel / mTimestep;
+        p.currentPos += direction * 10 / mTimestep;
+        
+        // add the current position to the pathVertices deque
+        p.pathVertices.push_back(p.currentPos);
+
+        // if we have too many vertices in the deque, get rid of the oldest ones
+        while(p.pathVertices.size() > 200) {
+            p.pathVertices.pop_front();
+        }
+
+        // clear the pathLines ofMesh from any old vertices
+        p.pathLines.clear();
+
+        // add all the vertices from pathVertices
+        for(unsigned int i = 0; i < p.pathVertices.size(); i++) {
+            p.pathLines.addVertex(p.pathVertices[i]);
+        }
     }
-    
-    Hi = (float)floor(H / 60.0f);
-    
-    f = H / 60.0f - Hi;
-    
-    p = V * (1.0f - S);
-    q = V * (1.0f - f * S);
-    t = V * (1.0f - (1.0f - f) * S);
-    
-    r = g = b = 0;
-    
-    if(Hi == 0)
-    {
-        r = (int)(255.0f * V);
-        g = (int)(255.0f * t);
-        b = (int)(255.0f * p);
-    }
-    if(Hi == 1)
-    {
-        r = (int)(255.0f * q);
-        g = (int)(255.0f * V);
-        b = (int)(255.0f * p);
-    }
-    if(Hi == 2)
-    {
-        r = (int)(255.0f * p);
-        g = (int)(255.0f * V);
-        b = (int)(255.0f * t);
-    }
-    if(Hi == 3)
-    {
-        r = (int)(255.0f * p);
-        g = (int)(255.0f * q);
-        b = (int)(255.0f * V);
-    }
-    if(Hi == 4)
-    {
-        r = (int)(255.0f * t);
-        g = (int)(255.0f * p);
-        b = (int)(255.0f * V);
-    }
-    if(Hi == 5)
-    {
-        r = (int)(255.0f * V); 
-        g = (int)(255.0f * p);
-        b = (int)(255.0f * q);
-    }
-    
-    ofColor error(r,g,b);
-    return error;
 }
+
+void Paperman::modelingPlane(ofMesh& mesh)
+{
+    // vertices
+    mesh.addVertex(ofVec3f(0, 0, 0));
+    mesh.addVertex(ofVec3f(-20, 0, -60));
+    mesh.addVertex(ofVec3f(-2, 0,  -60));
+    mesh.addVertex(ofVec3f(0, 13, -60));
+    mesh.addVertex(ofVec3f(2, 0, -60));
+    mesh.addVertex(ofVec3f(20, 0, -60));
+    
+    // normals
+    mesh.addNormal(ofVec3f(0, -0.0285722, 0.999592));
+    mesh.addNormal(ofVec3f(0, 0, 1));
+    mesh.addNormal(ofVec3f(0.650801, -0.0216934, 0.758938));
+    mesh.addNormal(ofVec3f(0, -0.211753, 0.977323));
+    mesh.addNormal(ofVec3f(-0.650801, -0.0216934, 0.758938));
+    mesh.addNormal(ofVec3f(0, 0, 1));
+    
+    // indices
+    mesh.addIndex(0);
+    mesh.addIndex(1);
+    mesh.addIndex(2);
+    mesh.addIndex(0);
+    mesh.addIndex(2);
+    mesh.addIndex(3);
+    mesh.addIndex(0);
+    mesh.addIndex(3);
+    mesh.addIndex(4);
+    mesh.addIndex(0);
+    mesh.addIndex(4);
+    mesh.addIndex(5);
+}
+
+void Paperman::setScalePlane(const float scale)
+{
+    for(auto& p : mMesh.getVertices())
+    {
+        p *= scale;
+    }
+}
+
+void Paperman::addPlane()
+{
+    Plane n;
+    
+    // draw the vertices in pathLines as a line strip
+    n.pathLines.setMode(OF_PRIMITIVE_LINE_STRIP);
+    n.index = mPlanes.size();
+    
+    if(mPlanes.size() == 0) {
+        n.col = ofColor::fromHex(0x00abec); // cyan
+    }else{
+        n.col = ofColor::fromHsb(ofRandom(255), 255, 255);
+    }
+
+    mPlanes.push_back(n);
+}
+
+void Paperman::removePlane()
+{
+    mPlanes.pop_back();
+}
+
+void Paperman::resetPos()
+{
+    for(auto &p : mPlanes){
+        p.previousPos = ofVec3f::zero();
+        p.currentPos = ofVec3f::zero();
+    }
+}
+
+//JOINT_HIPS              = 0,
+//JOINT_ABDOMEN           = 1,
+//JOINT_CHEST             = 2,
+//JOINT_NECK              = 3,
+//JOINT_HEAD              = 4,
+//
+//JOINT_LEFT_HIP          = 5,
+//JOINT_LEFT_KNEE         = 6,
+//JOINT_LEFT_ANKLE        = 7,
+//JOINT_LEFT_TOE          = 8,
+//
+//JOINT_RIGHT_HIP         = 9,
+//JOINT_RIGHT_KNEE        = 10,
+//JOINT_RIGHT_ANKLE       = 11,
+//JOINT_RIGHT_TOE         = 12,
+//
+//JOINT_LEFT_COLLAR       = 13,
+//JOINT_LEFT_SHOULDER     = 14,
+//JOINT_LEFT_ELBOW        = 15,
+//JOINT_LEFT_WRIST        = 16,
+//JOINT_LEFT_HAND         = 17,
+//
+//JOINT_RIGHT_COLLAR      = 18,
+//JOINT_RIGHT_SHOULDER    = 19,
+//JOINT_RIGHT_ELBOW       = 20,
+//JOINT_RIGHT_WRIST       = 21,
+//JOINT_RIGHT_HAND        = 22,
+//
+//NUM_JOINTS              = 23,

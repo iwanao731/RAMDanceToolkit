@@ -12,6 +12,7 @@
 		8DD534331FA317A700C5DEEE /* DDA.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8DD534311FA317A700C5DEEE /* DDA.cpp */; };
 		8DD534371FA317BB00C5DEEE /* Paperman.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8DD534351FA317BB00C5DEEE /* Paperman.cpp */; };
 		8DD5343B1FA317CC00C5DEEE /* WeightEffort.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8DD534391FA317CC00C5DEEE /* WeightEffort.cpp */; };
+		8DD534591FA3277E00C5DEEE /* Emitter.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 8DD534571FA3277E00C5DEEE /* Emitter.cpp */; };
 		9A2B3F6516D325C7001CBFC9 /* Kepler.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A2B3F5116D325C7001CBFC9 /* Kepler.cpp */; };
 		9A2B3F6616D325C7001CBFC9 /* KeplerBtDynamics.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A2B3F5316D325C7001CBFC9 /* KeplerBtDynamics.cpp */; };
 		9A2B3F6716D325C7001CBFC9 /* KeplerBtShapeDrawer.cpp in Sources */ = {isa = PBXBuildFile; fileRef = 9A2B3F5516D325C7001CBFC9 /* KeplerBtShapeDrawer.cpp */; };
@@ -118,6 +119,8 @@
 		8DD534391FA317CC00C5DEEE /* WeightEffort.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = WeightEffort.cpp; path = scenes/WeightEffort/WeightEffort.cpp; sourceTree = "<group>"; };
 		8DD5343A1FA317CC00C5DEEE /* WeightEffort.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = WeightEffort.h; path = scenes/WeightEffort/WeightEffort.h; sourceTree = "<group>"; };
 		8DD5343D1FA317DF00C5DEEE /* VisualStudio.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = VisualStudio.h; path = scenes/VisualStudio/VisualStudio.h; sourceTree = "<group>"; };
+		8DD534571FA3277E00C5DEEE /* Emitter.cpp */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.cpp.cpp; name = Emitter.cpp; path = scenes/Emitter/Emitter.cpp; sourceTree = "<group>"; };
+		8DD534581FA3277E00C5DEEE /* Emitter.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; name = Emitter.h; path = scenes/Emitter/Emitter.h; sourceTree = "<group>"; };
 		9A2B3F4016D325C7001CBFC9 /* Abacus.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = Abacus.h; sourceTree = "<group>"; };
 		9A2B3F4216D325C7001CBFC9 /* BasicActor.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BasicActor.h; sourceTree = "<group>"; };
 		9A2B3F4416D325C7001CBFC9 /* BigBox.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = BigBox.h; sourceTree = "<group>"; };
@@ -326,9 +329,19 @@
 			name = VisualStudio;
 			sourceTree = "<group>";
 		};
+		8DD534561FA3276C00C5DEEE /* Emitter */ = {
+			isa = PBXGroup;
+			children = (
+				8DD534571FA3277E00C5DEEE /* Emitter.cpp */,
+				8DD534581FA3277E00C5DEEE /* Emitter.h */,
+			);
+			name = Emitter;
+			sourceTree = "<group>";
+		};
 		9A1DE6D516AA666100A10E3F /* Scenes */ = {
 			isa = PBXGroup;
 			children = (
+				8DD534561FA3276C00C5DEEE /* Emitter */,
 				8DD5343C1FA317D200C5DEEE /* VisualStudio */,
 				8DD534381FA317C500C5DEEE /* WeightEffort */,
 				8DD534341FA317B200C5DEEE /* Paperman */,
@@ -722,6 +735,7 @@
 				8DD5343B1FA317CC00C5DEEE /* WeightEffort.cpp in Sources */,
 				D2B8DCD316D3835700210022 /* ChainBtDynamics.cpp in Sources */,
 				D2B8DCD416D3835700210022 /* ChainBtShapeDrawer.cpp in Sources */,
+				8DD534591FA3277E00C5DEEE /* Emitter.cpp in Sources */,
 				CF2B842E1A84D1B4008A183B /* Laban.cpp in Sources */,
 				D2B8DCD516D3835700210022 /* ChainObject.cpp in Sources */,
 				8DD534331FA317A700C5DEEE /* DDA.cpp in Sources */,
