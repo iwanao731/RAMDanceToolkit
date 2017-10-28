@@ -35,6 +35,9 @@ void WeightEffort::update()
 
 void WeightEffort::draw()
 {
+    ofPushStyle();
+    ofSetColor(255);
+    
     rdtk::BeginCamera();
     
     for(int i=0; i<getNumNodeArray(); i++)
@@ -44,6 +47,7 @@ void WeightEffort::draw()
     }
 
     rdtk::EndCamera();
+    ofPopStyle();
 }
 
 void WeightEffort::drawBeat(const rdtk::NodeArray& NA)
@@ -73,6 +77,7 @@ void WeightEffort::drawBeat(const rdtk::NodeArray& NA)
 const float WeightEffort::computeWeightEffort(const rdtk::NodeArray& NA)
 {
     float totalWE = 0.0f;
+
     if(!mIsFirstFrame)
     {
         for (int i=0; i<NA.getNumNode(); i++)
@@ -80,7 +85,6 @@ const float WeightEffort::computeWeightEffort(const rdtk::NodeArray& NA)
             const rdtk::Node &node = NA.getNode(i);
             mPrevAngles[i] = node.getGlobalOrientation().getEuler();
         }
-        
         mIsFirstFrame = true;
     }else{
         for (int i=0; i<NA.getNumNode(); i++)
@@ -91,7 +95,8 @@ const float WeightEffort::computeWeightEffort(const rdtk::NodeArray& NA)
             ofQuaternion q;
             q.makeRotate(v0, v1);
             float angle;
-            ofVec3f v = q.getEuler();
+            //ofVec3f v = q.getEuler();
+            ofVec3f v = (v0.cross(v1)).normalize();
             q.getRotate(angle, v.x, v.y, v.z);
             totalWE += angle;//(abs(v.x) + abs(v.y) + abs(v.z));
             

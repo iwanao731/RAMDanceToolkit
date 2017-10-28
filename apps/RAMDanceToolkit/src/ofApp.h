@@ -54,6 +54,7 @@
 #include "Paperman.h"
 #include "VisualStudio.h"
 #include "Emitter.h"
+#include "Circles.h"
 
 class ofApp : public rdtk::BaseApp
 {

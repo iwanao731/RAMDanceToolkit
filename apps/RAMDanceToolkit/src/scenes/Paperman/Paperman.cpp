@@ -11,10 +11,10 @@
 Paperman::Paperman() :
     mIsAddPlane(false),
     mIsRemovePlane(false),
-    mIsPlayAuto(false),
-    mIsPlayManual(true),
-    mIsPlayBlackBox(false),
-    mTimestep(0.33)
+    mTimestep(0.33),
+    mTrackDistance(200),
+    mPlayingMethod(0), // automatic
+    mManualControlMethod(0)   // velocity control in manual
 {
     ofSetVerticalSync(true);
     this->modelingPlane(mMesh);
@@ -23,15 +23,24 @@ Paperman::Paperman() :
 
 void Paperman::setup()
 {
-    cout << "Start scene setup: " << getName() << endl;
     mEx.setup(this);
-    cout << "Done scene setup: " << getName() << endl;
 }
 
 void Paperman::update()
 {
     mEx.update();
 
+    // automatic
+    if(mPlayingMethod == 0)
+    {
+        this->updateAuto();
+    }
+    // manually
+    else if(mPlayingMethod == 1)
+    {
+        this->updateManual();
+    }
+    
     if(mIsAddPlane){
         addPlane();
         mIsAddPlane = false;
@@ -40,13 +49,6 @@ void Paperman::update()
     if(mIsRemovePlane){
         removePlane();
         mIsRemovePlane = false;
-    }
-    
-    if(mIsPlayAuto){
-        this->updateAuto();
-    }
-    else if(mIsPlayManual){
-        this->updateManual();
     }
 }
 
@@ -82,10 +84,18 @@ void Paperman::draw()
 
 void Paperman::drawImGui()
 {
-    ImGui::Checkbox("Add plane", &mIsAddPlane);
+    ImGui::DragFloat("Tracking distance", &mTrackDistance, 100.0, 0.0, 10000.0);
+
+    ImGui::Checkbox("Add plane", &mIsAddPlane); ImGui::SameLine();
     ImGui::Checkbox("Remove plane", &mIsRemovePlane);
-    ImGui::Checkbox("Auto play", &mIsPlayAuto);
-    ImGui::Checkbox("Manual play", &mIsPlayManual);
+    
+    // playing method
+    ImGui::RadioButton("Auto play", &mPlayingMethod, 0); ImGui::SameLine();
+    ImGui::RadioButton("Manual play", &mPlayingMethod, 1);
+    
+    // control method in manual play
+    ImGui::RadioButton("Control Velocity", &mManualControlMethod, 0); ImGui::SameLine();
+    ImGui::RadioButton("Control Direction", &mManualControlMethod, 1);
     
     mEx.drawImGui();
 }
@@ -107,7 +117,7 @@ void Paperman::updateAuto()
         p.pathVertices.push_back(p.currentPos);
         
         // if we have too many vertices in the deque, get rid of the oldest ones
-        while(p.pathVertices.size() > 200) {
+        while(p.pathVertices.size() > mTrackDistance) {
             p.pathVertices.pop_front();
         }
         
@@ -183,19 +193,32 @@ void Paperman::updateManual()
         const ofMatrix4x4 mat = mEx.getNodeAt(i).getGlobalTransformMatrix();
         const ofVec3f pos = mEx.getPositionAt(i);
         const ofVec3f next = mEx.getPositionAt((i+1) % mEx.getNumPort());
-        const ofVec3f vel = mEx.getVelocityAt(i);
-        ofVec3f direction = next - pos;
+        ofVec3f vel = mEx.getVelocityAt(i);
+        ofVec3f p0 = mEx.getNodeAt(i).getParent()->getGlobalPosition();
+        ofVec3f p1 = mEx.getNodeAt(i).getGlobalPosition();
+        
+        ofVec3f direction = (p1 - p0).normalize();
         
         auto& p = mPlanes[i];
         p.previousPos = p.currentPos; // save for next frame
-        //p.currentPos += vel / mTimestep;
-        p.currentPos += direction * 10 / mTimestep;
+        
+        // velocity control
+        if(mManualControlMethod == 0)
+        {
+            //vel.x = -vel.x;
+            p.currentPos += vel / mTimestep;
+        }
+        // direction control
+        else if(mManualControlMethod == 1)
+        {
+            p.currentPos += direction / mTimestep;
+        }
         
         // add the current position to the pathVertices deque
         p.pathVertices.push_back(p.currentPos);
 
         // if we have too many vertices in the deque, get rid of the oldest ones
-        while(p.pathVertices.size() > 200) {
+        while(p.pathVertices.size() > mTrackDistance) {
             p.pathVertices.pop_front();
         }
 
@@ -269,7 +292,8 @@ void Paperman::addPlane()
 
 void Paperman::removePlane()
 {
-    mPlanes.pop_back();
+    if(mPlanes.size() > 0)
+        mPlanes.erase(mPlanes.begin());
 }
 
 void Paperman::resetPos()

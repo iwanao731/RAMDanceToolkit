@@ -48,7 +48,7 @@ void ofApp::setup()
 //	sceneManager.addScene<SoundCube>();
 //	sceneManager.addScene<UpsideDown>();
 //	sceneManager.addScene<HastyChase>();
-//	sceneManager.addScene<ColorGrid>();
+	sceneManager.addScene<ColorGrid>();
 //	sceneManager.addScene<ThreePoints>();
 //	sceneManager.addScene<FourPoints>();
 //	sceneManager.addScene<Monster>();
@@ -60,13 +60,12 @@ void ofApp::setup()
 #endif
     
     // original
-    sceneManager.addScene<Emitter>();
     sceneManager.addScene<DDA>();
     sceneManager.addScene<WeightEffort>();
     sceneManager.addScene<Paperman>();
-    sceneManager.addScene<VisualStudio>();
     sceneManager.addScene<Emitter>();
-    //sceneManager.addScene<Extractor>();
+    sceneManager.addScene<VisualStudio>();
+    sceneManager.addScene<Circles>();
 }
 
 //--------------------------------------------------------------

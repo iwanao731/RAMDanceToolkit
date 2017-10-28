@@ -9,18 +9,19 @@
 #include "Emitter.h"
 
 Emitter::Emitter() :
-mIsFirstFrame(false),
-mSize(5.0f),
-mDamping(1.0f),
-mTimestep(0.66f),
-mThreshold(5.0f),
-mGravity(-6.0f),
-mLife(200),
-mEnableColor(false),
-mIsDrawEdge(false)
+    mIsFirstFrame(false),
+    mSize(5.0f),
+    mDamping(1.0f),
+    mTimestep(0.66f),
+    mThreshold(5.0f),
+    mGravity(-6.0f),
+    mLife(200),
+    mEnableColor(false),
+    mIsDrawEdge(false)
 {
     mPreviousPos.clear();
     mPreviousPos.resize(rdtk::Actor::NUM_JOINTS);
+    cout << "Emitter Constructor" << endl;
 }
 
 void Emitter::update()
@@ -89,6 +90,10 @@ void Emitter::update()
 
 void Emitter::draw()
 {
+    ofPushStyle();
+    
+    ofSetColor(255);
+
     rdtk::BeginCamera();
     
     for(auto& particle : mParticles)
@@ -124,6 +129,8 @@ void Emitter::draw()
     }
     
     rdtk::EndCamera();
+    
+    ofPopStyle();
 }
 
 void Emitter::drawImGui()

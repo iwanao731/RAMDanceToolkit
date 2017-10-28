@@ -42,16 +42,18 @@ private:
     bool mIsAddPlane;
     bool mIsRemovePlane;
     
-    bool mIsPlayAuto;
-    bool mIsPlayManual;
-    bool mIsPlayBlackBox;
+    bool mIsControlVelocity;
+    bool mIsControlDirection;
+    
+    int mPlayingMethod;
+    int mManualControlMethod;
     
     float mTimestep;
+    float mTrackDistance;
     
     ofMesh mMesh;
     vector<Plane> mPlanes;
     rdtk::MotionExtractor mEx;  // for picking the joint
-
 
     void updateAuto();
     void updateManual();

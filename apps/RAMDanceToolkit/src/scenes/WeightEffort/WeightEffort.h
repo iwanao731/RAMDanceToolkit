@@ -6,7 +6,7 @@
 #pragma once
 #include "ramMain.h"
 
-class WeightEffort: public rdtk::BaseScene
+class WeightEffort: public rdtk::BaseScene, public ofBaseSoundInput
 {
 public:    
     WeightEffort();
