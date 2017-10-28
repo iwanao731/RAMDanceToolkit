@@ -6,25 +6,24 @@
 //
 //
 
-#include "Emitter.h"
+#include "Spiderman.h"
 
-Emitter::Emitter() :
+Spiderman::Spiderman() :
     mIsFirstFrame(false),
-    mSize(5.0f),
+    mSize(2.0f),
     mDamping(1.0f),
     mTimestep(0.66f),
-    mThreshold(5.0f),
-    mGravity(-6.0f),
+    mThreshold(15.0f),
+    mGravity(0.0f),
     mLife(200),
     mEnableColor(false),
-    mIsDrawEdge(false)
+    mIsDrawEdge(true)
 {
     mPreviousPos.clear();
     mPreviousPos.resize(rdtk::Actor::NUM_JOINTS);
-    cout << "Emitter Constructor" << endl;
 }
 
-void Emitter::update()
+void Spiderman::update()
 {
     // update simulation
     int num = 0;
@@ -78,7 +77,7 @@ void Emitter::update()
                 
                 if(mThreshold < length)
                 {
-                    this->addParticle(node.getGlobalPosition(), vel, mLife);
+                    this->addParticle(node.getGlobalPosition(), vel, mLife, j);
                 }
                 
                 // save current position for next frame
@@ -88,7 +87,7 @@ void Emitter::update()
     }
 }
 
-void Emitter::draw()
+void Spiderman::draw()
 {
     ofPushStyle();
     
@@ -106,7 +105,7 @@ void Emitter::draw()
         ofVec3f p = particle.pos;
         ofPushMatrix();
         ofTranslate(p.x, p.y, p.z);
-        ofDrawBox(0,0,0, mSize);
+        ofDrawSphere(0,0,0, mSize);
         //drawPaperPlane();
         ofPopMatrix();
         
@@ -124,7 +123,11 @@ void Emitter::draw()
             
             int r = ofRandom(mParticles.size());
             int idx = mParticles[i].linkIndex;
-            ofDrawLine(mParticles[i].pos, mParticles[idx].pos);
+            
+            const rdtk::NodeArray &NA = getNodeArray(0);
+            const rdtk::Node &node = NA.getNode(idx);
+                
+            ofDrawLine(mParticles[i].pos, node.getGlobalPosition());
         }
     }
     
@@ -133,7 +136,7 @@ void Emitter::draw()
     ofPopStyle();
 }
 
-void Emitter::drawImGui()
+void Spiderman::drawImGui()
 {
     ImGui::Checkbox("Enable Color", &mEnableColor);
     ImGui::Checkbox("Draw Edge", &mIsDrawEdge);
@@ -145,7 +148,7 @@ void Emitter::drawImGui()
     ImGui::DragFloat("Threshold", &mThreshold, 0.1, 0.0, 100.0);
 }
 
-void Emitter::addParticle(ofVec3f pos, ofVec3f vel, float life)
+void Spiderman::addParticle(ofVec3f pos, ofVec3f vel, float life, int jointIndex)
 {
     Particle p;
     p.pos = pos;
@@ -153,11 +156,11 @@ void Emitter::addParticle(ofVec3f pos, ofVec3f vel, float life)
     p.life = life;
     p.col = errorToRGB(vel.length(), 0.0, 10);
     p.sumDistance = 0.0f;
-    p.linkIndex = ofRandom(mParticles.size());
+    p.linkIndex = jointIndex;//ofRandom(mParticles.size());
     mParticles.push_back(p);
 }
 
-float Emitter::gaussFunction(float sumDistance)
+float Spiderman::gaussFunction(float sumDistance)
 {
     float myu = 20.f;
     float sigma = 4.0f;
@@ -167,7 +170,7 @@ float Emitter::gaussFunction(float sumDistance)
     return gauss;
 }
 
-ofColor Emitter::errorToRGB(float err, float errMin, float errMax)
+ofColor Spiderman::errorToRGB(float err, float errMin, float errMax)
 {
     int r, g, b;
     float norm_err = (err - errMin) / (errMax - errMin);

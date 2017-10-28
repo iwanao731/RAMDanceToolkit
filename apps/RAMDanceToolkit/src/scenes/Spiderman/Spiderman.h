@@ -22,21 +22,21 @@ struct Particle{
     float angle;
 };
 
-class Emitter : public rdtk::BaseScene
+class Spiderman : public rdtk::BaseScene
 {
 public:
     
-    Emitter();
+    Spiderman();
     void update();
     void draw();
     void drawImGui();
-    string getName() const { return "Emitter"; }
+    string getName() const { return "Spiderman"; }
 
     // original
     int getNumParticles() { return mParticles.size(); }
     float gaussFunction(float sumDistance);
     ofColor errorToRGB(float err, float errMin, float errMax);
-    void addParticle(ofVec3f pos, ofVec3f vel, float life);
+    void addParticle(ofVec3f pos, ofVec3f vel, float life, int jointIdx);
     
 private:
     

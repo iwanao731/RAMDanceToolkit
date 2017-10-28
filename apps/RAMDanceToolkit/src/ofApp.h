@@ -53,8 +53,9 @@
 #include "WeightEffort.h"
 #include "Paperman.h"
 #include "VisualStudio.h"
-#include "Emitter.h"
+#include "Spiderman.h"
 #include "Circles.h"
+#include "Sound.h"
 
 class ofApp : public rdtk::BaseApp
 {
@@ -84,5 +85,13 @@ public:
 	void onActorExit(const rdtk::Actor &actor);
 	void onRigidSetup(const rdtk::RigidBody &rigid);
 	void onRigidExit(const rdtk::RigidBody &rigid);
+    
+    // original
+    void audioOut(float * output, int bufferSize, int nChannels);
+    
+private:
+    
+    Paperman* soundScene;
+    //WeightEffort* mSound;
 
 };

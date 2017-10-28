@@ -48,7 +48,7 @@ void ofApp::setup()
 //	sceneManager.addScene<SoundCube>();
 //	sceneManager.addScene<UpsideDown>();
 //	sceneManager.addScene<HastyChase>();
-	sceneManager.addScene<ColorGrid>();
+//	sceneManager.addScene<ColorGrid>();
 //	sceneManager.addScene<ThreePoints>();
 //	sceneManager.addScene<FourPoints>();
 //	sceneManager.addScene<Monster>();
@@ -62,25 +62,36 @@ void ofApp::setup()
     // original
     sceneManager.addScene<DDA>();
     sceneManager.addScene<WeightEffort>();
+    sceneManager.addScene<Sound>();
     sceneManager.addScene<Paperman>();
-    sceneManager.addScene<Emitter>();
+    sceneManager.addScene<Spiderman>();
     sceneManager.addScene<VisualStudio>();
     sceneManager.addScene<Circles>();
+
+    soundScene = (Paperman*)(sceneManager.getScene(4).get());
+//    mSound = (WeightEffort*)(sceneManager.getScene(2).get());
+//    ofSoundStreamSetup(2, 0);
+    ofSoundStreamSetup(2, 0, this, 44100, 1024, 2);//44100
+}
+
+//--------------------------------------------------------------
+void ofApp::audioOut(float * output, int bufferSize, int nChannels)
+{
+    soundScene->audioOut(output, bufferSize, nChannels);
+    //mSound->audioOut(output, bufferSize, nChannels);
 }
 
 //--------------------------------------------------------------
 void ofApp::update()
 {
-	
+
 }
 
 //--------------------------------------------------------------
 void ofApp::draw()
 {
-	
+
 }
-
-
 
 #pragma mark - ram methods
 //--------------------------------------------------------------

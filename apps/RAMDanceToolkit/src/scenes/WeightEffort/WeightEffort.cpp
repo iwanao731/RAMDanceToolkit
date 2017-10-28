@@ -6,20 +6,29 @@
 #include "WeightEffort.h"
 
 WeightEffort::WeightEffort() :
-mIsFirstFrame(false),
-mFrameIndex(0),
-mScaleY(0.3),
-mBufferSize(500)
+    mIsFirstFrame(false),
+    mFrameIndex(0),
+    mScaleY(0.3),
+    mBufferSize(512),
+    mDrawWidth(512),
+    mVolume(1.0)
 {
     mPrevAngles.clear();
     mPrevAngles.resize(rdtk::Actor::NUM_JOINTS);
     std::fill(mPrevAngles.begin(), mPrevAngles.end(), ofVec3f(0.0));
 }
 
+void WeightEffort::setup()
+{
+    mWEAudioL.assign(mBufferSize, 0.0);
+    mWEAudioR.assign(mBufferSize, 0.0);
+}
+
 void WeightEffort::drawImGui()
 {
+    ImGui::DragInt("Buffer size", &mBufferSize, 10, 0.0, 10000.0);
     ImGui::DragFloat("ScaleY", &mScaleY, 0.1, 0.0, 2.0);
-    ImGui::DragInt("BufferSize", &mBufferSize, 10, 0.0, 10000.0);
+    ImGui::DragFloat("Volume", &mVolume, 0.1, 0.0, 2.0);
 }
 
 void WeightEffort::update()
@@ -27,7 +36,7 @@ void WeightEffort::update()
     if(mIsFirstFrame)
         mFrameIndex++;
     
-    if(mWEPoints.size() > mBufferSize)
+    if(mWEPoints.size() > mDrawWidth)
     {
         mWEPoints.erase(mWEPoints.begin());
     }
@@ -106,3 +115,15 @@ const float WeightEffort::computeWeightEffort(const rdtk::NodeArray& NA)
     }
     return totalWE;
 }
+
+void WeightEffort::audioOut(float * output, int bufferSize, int nChannels)
+{
+    if(mWEPoints.size() > mBufferSize)
+    {
+        for (int i = 1; i <= bufferSize; i++){
+            mWEAudioL[i] = output[i*nChannels    ] = mWEPoints[mWEPoints.size() - mBufferSize - i ].y * mVolume;
+            mWEAudioR[i] = output[i*nChannels + 1] = mWEPoints[mWEPoints.size() - mBufferSize - i ].y * mVolume;
+        }
+    }
+}
+

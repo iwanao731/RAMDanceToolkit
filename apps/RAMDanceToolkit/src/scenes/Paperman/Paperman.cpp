@@ -12,9 +12,10 @@ Paperman::Paperman() :
     mIsAddPlane(false),
     mIsRemovePlane(false),
     mTimestep(0.33),
-    mTrackDistance(200),
+    mTrackDistance(256),
     mPlayingMethod(0), // automatic
-    mManualControlMethod(0)   // velocity control in manual
+    mManualControlMethod(0),   // velocity control in manual
+    mEnableSound(false)
 {
     ofSetVerticalSync(true);
     this->modelingPlane(mMesh);
@@ -24,6 +25,9 @@ Paperman::Paperman() :
 void Paperman::setup()
 {
     mEx.setup(this);
+    
+    mWEAudioL.assign(mTrackDistance, 0.0);
+    mWEAudioR.assign(mTrackDistance, 0.0);
 }
 
 void Paperman::update()
@@ -84,6 +88,8 @@ void Paperman::draw()
 
 void Paperman::drawImGui()
 {
+    ImGui::Checkbox("Enable Sound", &mEnableSound);
+    
     ImGui::DragFloat("Tracking distance", &mTrackDistance, 100.0, 0.0, 10000.0);
 
     ImGui::Checkbox("Add plane", &mIsAddPlane); ImGui::SameLine();
@@ -304,32 +310,16 @@ void Paperman::resetPos()
     }
 }
 
-//JOINT_HIPS              = 0,
-//JOINT_ABDOMEN           = 1,
-//JOINT_CHEST             = 2,
-//JOINT_NECK              = 3,
-//JOINT_HEAD              = 4,
-//
-//JOINT_LEFT_HIP          = 5,
-//JOINT_LEFT_KNEE         = 6,
-//JOINT_LEFT_ANKLE        = 7,
-//JOINT_LEFT_TOE          = 8,
-//
-//JOINT_RIGHT_HIP         = 9,
-//JOINT_RIGHT_KNEE        = 10,
-//JOINT_RIGHT_ANKLE       = 11,
-//JOINT_RIGHT_TOE         = 12,
-//
-//JOINT_LEFT_COLLAR       = 13,
-//JOINT_LEFT_SHOULDER     = 14,
-//JOINT_LEFT_ELBOW        = 15,
-//JOINT_LEFT_WRIST        = 16,
-//JOINT_LEFT_HAND         = 17,
-//
-//JOINT_RIGHT_COLLAR      = 18,
-//JOINT_RIGHT_SHOULDER    = 19,
-//JOINT_RIGHT_ELBOW       = 20,
-//JOINT_RIGHT_WRIST       = 21,
-//JOINT_RIGHT_HAND        = 22,
-//
-//NUM_JOINTS              = 23,
+void Paperman::audioOut(float * output, int bufferSize, int nChannels)
+{
+    if(!mEnableSound) return;
+    
+    int i=0;
+    while(i < mPlanes[0].pathLines.getNumVertices()){
+        float x = mPlanes[0].pathVertices[i].x;
+        float y = mPlanes[0].pathVertices[i].y;
+        mWEAudioL[i] = output[i*nChannels    ] = x;
+        mWEAudioR[i] = output[i*nChannels + 1] = y;
+        i++;
+    }
+}

@@ -32,6 +32,8 @@ public:
     void drawImGui();
     string getName() const { return "Paperman"; }
     
+    void audioOut(float * output, int bufferSize, int nChannels);
+    
     void modelingPlane(ofMesh& mesh);
     void setScalePlane(const float scale);
     void addPlane();
@@ -44,6 +46,7 @@ private:
     
     bool mIsControlVelocity;
     bool mIsControlDirection;
+    bool mEnableSound;
     
     int mPlayingMethod;
     int mManualControlMethod;
@@ -58,4 +61,7 @@ private:
     void updateAuto();
     void updateManual();
     void checkNumPlaneWithActor();
+    
+    // sound
+    vector<float> mWEAudioL, mWEAudioR;
 };
