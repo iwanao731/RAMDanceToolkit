@@ -13,13 +13,15 @@ Paperman::Paperman() :
     mIsRemovePlane(false),
     mTimestep(0.33),
     mTrackDistance(256),
-    mPlayingMethod(0), // automatic
-    mManualControlMethod(0),   // velocity control in manual
-    mEnableSound(false)
+    mPlayingMethod(1), // automatic(0) or manual(1)
+    mManualControlMethod(0),   // velocity(0) of direction(1) control in manual
+    mEnableSound(false),
+    mIsResetPos(false)
 {
     ofSetVerticalSync(true);
     this->modelingPlane(mMesh);
     this->addPlane();
+    checkSetPort = false;
 }
 
 void Paperman::setup()
@@ -33,7 +35,6 @@ void Paperman::setup()
 void Paperman::update()
 {
     mEx.update();
-
     // automatic
     if(mPlayingMethod == 0)
     {
@@ -54,6 +55,28 @@ void Paperman::update()
         removePlane();
         mIsRemovePlane = false;
     }
+    
+    if(mIsResetPos){
+        this->resetPos();
+//        mIsResetPos = false;
+    }
+    
+    if (!checkSetPort){
+        
+        //player.play();
+//        for (int i=0 ; i<23; i++){
+//            rdtk::NodeIdentifer n;
+//            n.set("jin" , 9);
+//            rdtk::MotionPort* mp = new rdtk::MotionPort(n);
+//            mEx.pushPort(mp);
+//        }
+        rdtk::NodeIdentifer n;
+        n.set("jin" , 9);
+        rdtk::MotionPort* mp = new rdtk::MotionPort(n);
+        mEx.pushPort(mp);
+        checkSetPort = true;
+    }
+
 }
 
 void Paperman::draw()
@@ -88,6 +111,7 @@ void Paperman::draw()
 
 void Paperman::drawImGui()
 {
+    ImGui::Checkbox("Reset Pos", &mIsResetPos);
     ImGui::Checkbox("Enable Sound", &mEnableSound);
     
     ImGui::DragFloat("Tracking distance", &mTrackDistance, 100.0, 0.0, 10000.0);

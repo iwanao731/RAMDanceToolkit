@@ -39,10 +39,13 @@ public:
     void addPlane();
     void removePlane();
     void resetPos();
+    
+    bool checkSetPort;
 
 private:
     bool mIsAddPlane;
     bool mIsRemovePlane;
+    bool mIsResetPos;
     
     bool mIsControlVelocity;
     bool mIsControlDirection;
